@@ -1,51 +1,51 @@
 [
   {
     "id": 1,
-    "name": "Best art",
-    "price": "799",
+    "name": "10 types of flower Art",
+    "price": "699/-Rs",
     "image": "https://PNiktrix.github.io/Art/Art1.jpeg",
     "tag": "Bestseller"
   },
   {
     "id": 2,
-    "name": "Midnight Forest",
-    "price": "899",
+    "name": "Bird in Spring",
+    "price": "99/-rs",
     "image": "https://PNiktrix.github.io/Art/Art2.jpeg",
     "tag": ""
   },
   {
     "id": 3,
-    "name": "Desert Bloom",
-    "price": "749",
+    "name": "Home Art",
+    "price": "399",
     "image": "https://PNiktrix.github.io/Art/Art3.jpeg",
     "tag": "New"
   },
   {
     "id": 4,
-    "name": "Ocean Calm",
-    "price": "849",
+    "name": "Mount Fuji Art",
+    "price": "229",
     "image": "https://PNiktrix.github.io/Art/Art4.jpeg",
     "tag": ""
   },
   {
     "id": 5,
-    "name": "Urban Geometry",
-    "price": "999",
+    "name": "Flowers",
+    "price": "299",
     "image": "https://PNiktrix.github.io/Art/Art5.jpeg",
     "tag": "Popular"
   },
   {
     "id": 6,
-    "name": "Soft Botanicals",
-    "price": "699",
+    "name": "Nissan GTR wall Art",
+    "price": "69",
     "image": "https://PNiktrix.github.io/Art/Art6.jpeg",
     "tag": ""
   },
   {
     "id": 7,
-    "name": "Mountain Dawn",
-    "price": "849",
-    "image": "https://PNiktrix.github.io/Art/Art7.jpeg",
+    "name": "Tree of Love",
+    "price": "119",
+    "image": "https://PNiktrix.github.io/Art/TreeofLove.jpeg",
     "tag": "Trending"
   },
   {
