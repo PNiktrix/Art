@@ -10,9 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
 
-  <!-- Tally Embed — loads Tally popup engine -->
-  <script async src="https://tally.so/widgets/embed.js"></script>
-
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css"/>
 </head>
@@ -95,21 +92,28 @@
     </button>
   </div>
 
-  <!-- ── TALLY POPUP TRIGGER ───────────────────── -->
-  <!-- Hidden button — Tally embed.js watches for clicks on this -->
-  <!-- All popup behaviour is controlled by data attributes below -->
-  <button
-    id="tally-trigger"
-    data-tally-open="PdEKa0"
-    data-tally-width="450"
-    data-tally-align-left="1"
-    data-tally-overlay="1"
-    data-tally-emoji-text="👋"
-    data-tally-auto-close="3000"
-    data-tally-form-events-forwarding="1"
-    style="display:none;"
-    aria-hidden="true"
-  ></button>
+  <!-- ── GOOGLE FORM POPUP ─────────────────────── -->
+  <div id="gform-overlay" onclick="if(event.target===this)App.closeTally()">
+    <div class="gf-sheet">
+      <div class="gf-top">
+        <div class="gf-top-left">
+          <div class="gf-dot"></div>
+          <span class="gf-label">Leave Your Details</span>
+        </div>
+        <button class="gf-close" onclick="App.closeTally()">&#x2715;</button>
+      </div>
+      <div class="gf-body">
+        <iframe
+          id="gform-frame"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSewJChwBQLRRjMgUvPCPoRSbnJNIKh3TWGbIpnwqhqs3qrfgA/viewform?embedded=true"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="Leave your details"
+        >Loading...</iframe>
+      </div>
+    </div>
+  </div>
 
   <!-- ── TOAST ──────────────────────────────────── -->
   <div id="toast"></div>
