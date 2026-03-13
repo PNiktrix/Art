@@ -17,28 +17,28 @@
     "id": 3,
     "name": "Desert Bloom",
     "price": "749",
-    "image": "images/Art3.jpeg",
+    "image": "Art3.jpeg",
     "tag": "New"
   },
   {
     "id": 4,
     "name": "Ocean Calm",
     "price": "849",
-    "image": "images/Art4.jpeg",
+    "image": "Art4.jpeg",
     "tag": ""
   },
   {
     "id": 5,
     "name": "Urban Lines",
     "price": "999",
-    "image": "images/Art5.jpeg",
+    "image": "Art5.jpeg",
     "tag": "Trending"
   },
   {
     "id": 6,
     "name": "Soft Botanicals",
     "price": "699",
-    "image": "images/Art6.jpeg",
+    "image": "Art6.jpeg",
     "tag": ""
   }
 ]
