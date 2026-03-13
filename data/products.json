@@ -3,14 +3,14 @@
     "id": 1,
     "name": "Golden Horizon",
     "price": "799",
-    "image": "images/Art1.jpeg",
+    "image": "Art1.jpeg",
     "tag": "Bestseller"
   },
   {
     "id": 2,
     "name": "Midnight Forest",
     "price": "899",
-    "image": "images/Art2.jpeg",
+    "image": "Art2.jpeg",
     "tag": ""
   },
   {
