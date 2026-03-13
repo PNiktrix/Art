@@ -49,7 +49,7 @@ class AppController {
     // Wire up controllers that need repo + cart
     this.wa    = new WhatsAppController(CONFIG.WA_NUMBER, this.repo, this.cart);
     this.ig    = new InstagramController(CONFIG.IG_HANDLE, this.repo, this.cart);
-    this.tally = new TallyController(CONFIG.TALLY_URL, this.validator, this.repo, this.cart);
+    this.tally = new TallyController(this.repo, this.cart);
     this.ui    = new UIManager(this.cart, this.repo);
 
     // Hero slider
@@ -87,15 +87,6 @@ class AppController {
   goInstagram() { this.ig.open(); }
   openTally()   { this.tally.open(); }
   closeTally()  { this.tally.close(); }
-
-  submitTally() {
-    this.tally.submit(() => {
-      this.ui.showToast("Request sent. We will contact you on WhatsApp soon.", 2800);
-      this.cart.clear();
-      document.querySelectorAll(".card.sel").forEach(c => c.classList.remove("sel"));
-      this.ui.sync();
-    });
-  }
 }
 
 // Boot when DOM is ready
