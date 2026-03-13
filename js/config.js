@@ -9,7 +9,7 @@ const CONFIG = {
 
   // ── Brand ──────────────────────────────────────────────
   BRAND_NAME:   "Pniktrix",
-  TAGLINE:      "Curated Wall Art Prints",
+  TAGLINE:      "Your Walls Our Art",
 
   // ── WhatsApp ────────────────────────────────────────────
   // Format: 91 + your 10-digit number. No + sign. No spaces.
@@ -17,7 +17,7 @@ const CONFIG = {
 
   // ── Instagram ───────────────────────────────────────────
   // Your Instagram handle WITHOUT the @ symbol
-  IG_HANDLE: "p.nik11",
+  IG_HANDLE: "nikhp_",
 
   // ── Tally Form ──────────────────────────────────────────
   // 1. Go to tally.so and create a free account
@@ -26,7 +26,7 @@ const CONFIG = {
   // 4. In Integrations, connect to Google Sheets
   // 5. Click Share — copy the form URL
   // 6. Paste the full URL below
-  TALLY_URL: "https://tally.so/r/YOUR_TALLY_FORM_ID",
+  TALLY_URL: "https://tally.so/r/PdEKa0",
 
   // ── Facebook Pixel ──────────────────────────────────────
   // 1. Go to business.facebook.com
