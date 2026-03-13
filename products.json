@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Golden Horizon",
+    "price": "799",
+    "image": "images/art1.jpg",
+    "tag": "Bestseller"
+  },
+  {
+    "id": 2,
+    "name": "Midnight Forest",
+    "price": "899",
+    "image": "images/art2.jpg",
+    "tag": ""
+  },
+  {
+    "id": 3,
+    "name": "Desert Bloom",
+    "price": "749",
+    "image": "images/art3.jpg",
+    "tag": "New"
+  },
+  {
+    "id": 4,
+    "name": "Ocean Calm",
+    "price": "849",
+    "image": "images/art4.jpg",
+    "tag": ""
+  },
+  {
+    "id": 5,
+    "name": "Urban Lines",
+    "price": "999",
+    "image": "images/art5.jpg",
+    "tag": "Trending"
+  },
+  {
+    "id": 6,
+    "name": "Soft Botanicals",
+    "price": "699",
+    "image": "images/art6.jpg",
+    "tag": ""
+  }
+]
