@@ -6,12 +6,16 @@
 // ============================================================
 
 class Product {
-  constructor({ id, name, price, image, tag = "" }) {
-    this.id    = id;
-    this.name  = name;
-    this.price = price;
-    this.image = image;
-    this.tag   = tag;
+  constructor({ id, name, price, image, tag = "", category = "All", images = [] }) {
+    this.id       = id;
+    this.name     = name;
+    this.price    = price;
+    this.image    = image;                          // primary thumbnail shown in grid
+    this.tag      = tag;
+    this.category = category;                       // used by category filter bar
+    // extra zoom images — name your files Art2s1.jpg, Art2s2.jpg etc.
+    // falls back to just the main image if no extras given
+    this.images   = images.length ? images : [image];
   }
 
   // Price shown on website cards only — never in chat messages

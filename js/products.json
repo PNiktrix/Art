@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Golden Horizon",
+    "price": "799",
+    "category": "Abstract",
+    "tag": "Bestseller",
+    "image": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Midnight Forest",
+    "price": "899",
+    "category": "Nature",
+    "tag": "",
+    "image": "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=600&q=80",
+      "https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&q=80"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Desert Bloom",
+    "price": "749",
+    "category": "Nature",
+    "tag": "New",
+    "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Ocean Calm",
+    "price": "849",
+    "category": "Minimal",
+    "tag": "",
+    "image": "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Urban Lines",
+    "price": "999",
+    "category": "Minimal",
+    "tag": "Trending",
+    "image": "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80",
+      "https://images.unsplash.com/photo-1549490349-8643362247b5?w=600&q=80"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Soft Botanicals",
+    "price": "699",
+    "category": "Nature",
+    "tag": "",
+    "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80",
+      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=600&q=80"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Mountain Dawn",
+    "price": "849",
+    "category": "Nature",
+    "tag": "",
+    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Abstract Waves",
+    "price": "799",
+    "category": "Abstract",
+    "tag": "Popular",
+    "image": "https://images.unsplash.com/photo-1549490349-8643362247b5?w=600&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1549490349-8643362247b5?w=600&q=80",
+      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80"
+    ]
+  }
+]

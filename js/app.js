@@ -2,31 +2,29 @@
 // app.js — AppController
 // ============================================================
 // Main controller. Wires all modules together.
-// This is the only file that touches CONFIG.
 //
 // Load order in index.html (bottom of body):
 //   config.js → pixel.js → product.js → cart.js →
 //   message.js → validator.js → whatsapp.js →
 //   instagram.js → tally.js → slider.js →
-//   gallery.js → ui.js → app.js
+//   gallery.js → category.js → viewer.js → ui.js → app.js
 // ============================================================
 
 class AppController {
   constructor() {
-    // Instantiate all modules with their dependencies
     this.repo      = new ProductRepository(CONFIG.PRODUCTS_JSON);
-    this.cart      = new CartManager();
+    this.cart      = new CartManager();   // cart auto-loads from localStorage
     this.validator = new FormValidator();
 
-    this.slider  = new HeroSlider("hero-track", "hero-nav");
-    this.gallery = null; // set after products load
-    this.ui      = null; // set after products load
+    this.slider   = new HeroSlider("hero-track", "hero-nav");
+    this.gallery  = null;
+    this.category = null;
+    this.viewer   = null;
+    this.ui       = null;
+    this.wa       = null;
+    this.ig       = null;
+    this.tally    = null;
 
-    this.wa  = null; // WhatsAppController
-    this.ig  = null; // InstagramController
-    this.tally = null; // TallyController
-
-    // Init Facebook Pixel
     PixelTracker.init(CONFIG.PIXEL_ID);
   }
 
@@ -43,14 +41,45 @@ class AppController {
       products = await this.repo.load();
     } catch {
       products = ProductRepository.fallback();
-      this.repo._list = products; // inject fallback into repo
+      this.repo._list = products;
     }
 
-    // Wire up controllers that need repo + cart
+    // Wire controllers
     this.wa    = new WhatsAppController(CONFIG.WA_NUMBER, this.repo, this.cart);
     this.ig    = new InstagramController(CONFIG.IG_HANDLE, this.repo, this.cart);
     this.tally = new TallyController(this.repo, this.cart);
     this.ui    = new UIManager(this.cart, this.repo);
+
+    // Viewer — zoom popup
+    this.viewer = new ImageViewer("zoom-overlay", this.cart, id => {
+      // Sync the gallery card visual after cart change inside viewer
+      this.gallery?.updateCard(id);
+      this.ui.sync();
+    });
+
+    // Gallery — pass onZoom callback to open viewer
+    this.gallery = new GalleryRenderer("grid", this.cart,
+      // onToggle — card tap selects/deselects
+      id => {
+        this.cart.toggle(id);
+        PixelTracker.addToCart();
+        this.ui.sync();
+        const p = this.repo.byId(id);
+        if (p) this.ui.showToast(
+          this.cart.has(id) ? `"${p.name}" selected` : `"${p.name}" removed`
+        );
+      },
+      // onZoom — zoom icon tap opens viewer
+      id => {
+        const p = this.repo.byId(id);
+        if (p) this.viewer.open(p);
+      }
+    );
+
+    // Category filter — re-renders gallery with filtered list
+    this.category = new CategoryFilter("cat-bar", "sec-label", filtered => {
+      this.gallery.render(filtered);
+    });
 
     // Hero slider
     this.slider.init(
@@ -58,23 +87,16 @@ class AppController {
       CONFIG.HERO_INTERVAL
     );
 
-    // Gallery
-    this.gallery = new GalleryRenderer("grid", this.cart, id => {
-      this.cart.toggle(id);
-      PixelTracker.addToCart();
-      this.ui.sync();
-
-      const p = this.repo.byId(id);
-      if (p) this.ui.showToast(
-        this.cart.has(id) ? `"${p.name}" selected` : `"${p.name}" removed`
-      );
-    });
-
+    // Initial render
     this.gallery.render(products);
+    this.category.init(products);   // builds pills after gallery renders
+
+    // Restore cart state from localStorage into gallery visuals
+    this.cart.ids().forEach(id => this.gallery.updateCard(id));
     this.ui.sync();
   }
 
-  // ── Public methods called from HTML onclick attributes ───
+  // ── Public methods called from HTML onclick ───────────────
 
   removeFromCart(id) {
     this.cart.remove(id);
@@ -82,13 +104,18 @@ class AppController {
     this.ui.sync();
   }
 
-  openBar()     { this.tally.open(); }   // Header "Order Now" pill
+  // Viewer controls
+  closeZoom()      { this.viewer.close(); }
+  zoomAddToCart()  { this.viewer.addToCart(); }
+
+  // Contact bar controls
+  openBar()     { this.tally.open(); }
   goWhatsApp()  { this.wa.open(); }
   goInstagram() { this.ig.open(); }
   openTally()   { this.tally.open(); }
   closeTally()  { this.tally.close(); }
 }
 
-// Boot when DOM is ready
+// Boot
 const App = new AppController();
 document.addEventListener("DOMContentLoaded", () => App.init());
