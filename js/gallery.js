@@ -6,9 +6,9 @@
 //   - Tap card body  → select/deselect (add to cart)
 //   - Tap zoom icon  → open image viewer popup
 //
-// Auto-scroll: grid slowly scrolls down automatically every 1s
-// so visitors see all products without manual scrolling.
-// Pauses on any user touch/scroll interaction.
+// Image auto-slide: each card cycles through its own images
+// (art1 → art1s1 → art1s2 → art1 ...) every 1.5 seconds.
+// Only valid/loaded images are shown — broken ones skipped.
 // ============================================================
 
 class GalleryRenderer {
@@ -18,16 +18,23 @@ class GalleryRenderer {
     this.onToggle = onToggle;
     this.onZoom   = onZoom;
 
-    this._autoTimer  = null;   // interval handle for auto-scroll
-    this._userActive = false;  // pauses auto-scroll when user is interacting
-    this._resumeTimer = null;
+    // Map of productId → { imgs[], idx, timer }
+    this._sliders = new Map();
   }
 
   render(products) {
+    // Stop all running slide timers before re-render
+    this._stopAllSliders();
+
     this.el.innerHTML = products.map(p => this._cardHTML(p)).join("");
     this._bindEvents();
-    // Restart auto-scroll whenever gallery re-renders (e.g. category filter)
-    this._startAutoScroll();
+
+    // Start image auto-slider for every card that has multiple images
+    products.forEach(p => {
+      if (p.images && p.images.length > 1) {
+        this._startSlider(p);
+      }
+    });
   }
 
   updateCard(id) {
@@ -35,39 +42,92 @@ class GalleryRenderer {
     if (card) card.classList.toggle("sel", this.cart.has(id));
   }
 
-  // ── Auto-scroll ───────────────────────────────────────────
+  // ── Image auto-slider per card ────────────────────────────
 
-  _startAutoScroll() {
-    clearInterval(this._autoTimer);
+  _startSlider(product) {
+    const card = this.el.querySelector(`.card[data-id="${product.id}"]`);
+    if (!card) return;
 
-    // Scroll the page down by one card-height every 1 second
-    this._autoTimer = setInterval(() => {
-      if (this._userActive) return;
+    const imgEl = card.querySelector(".cimg img");
+    if (!imgEl) return;
 
-      const scrollable = document.scrollingElement || document.documentElement;
-      const maxScroll  = scrollable.scrollHeight - scrollable.clientHeight;
+    // Validate images first — only cycle through ones that load
+    const validImgs = [];
+    let checked = 0;
 
-      // If at bottom — scroll back to top of gallery smoothly
-      if (scrollable.scrollTop >= maxScroll - 10) {
-        const gridTop = this.el.offsetTop - 60; // 60px header offset
-        scrollable.scrollTo({ top: gridTop, behavior: "smooth" });
-      } else {
-        // Advance by ~one card row height (approx 120px) per tick
-        scrollable.scrollBy({ top: 120, behavior: "smooth" });
-      }
-    }, 1000);
+    product.images.forEach((src, i) => {
+      const tester = new Image();
+      tester.onload = () => {
+        validImgs[i] = src;   // keep order
+        checked++;
+        if (checked === product.images.length) {
+          // All checked — filter out nulls and start cycling
+          const imgs = validImgs.filter(Boolean);
+          if (imgs.length > 1) this._cycleCard(product.id, imgEl, imgs);
+        }
+      };
+      tester.onerror = () => {
+        checked++;
+        if (checked === product.images.length) {
+          const imgs = validImgs.filter(Boolean);
+          if (imgs.length > 1) this._cycleCard(product.id, imgEl, imgs);
+        }
+      };
+      tester.src = src;
+    });
+  }
 
-    // Pause auto-scroll when user touches or scrolls manually
-    const pause = () => {
-      this._userActive = true;
-      clearTimeout(this._resumeTimer);
-      // Resume auto-scroll 4 seconds after user stops interacting
-      this._resumeTimer = setTimeout(() => { this._userActive = false; }, 4000);
+ _cycleCard(productId, imgEl, imgs) {
+  let idx = 0;
+  const wrap = imgEl.parentElement;
+
+  const timer = setInterval(() => {
+    idx = (idx + 1) % imgs.length;
+
+    // Preload next image before animating
+    const preload = new Image();
+    preload.onload = () => {
+
+      // Create incoming image element — starts positioned to the right
+      const next = document.createElement("img");
+      next.src = imgs[idx];
+      next.style.cssText = `
+        position:absolute; inset:0;
+        width:100%; height:100%;
+        object-fit:cover;
+        transform:translateX(100%);
+        transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+      `;
+      wrap.appendChild(next);
+
+      // Force reflow so transition fires
+      next.offsetHeight;
+
+      // Slide both in sync — next slides in from right, current slides out to left
+      next.style.transform = "translateX(0)";
+      imgEl.style.cssText += "transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94); transform:translateX(-100%);";
+
+      // After animation ends — remove old image, reset new one as the base
+      setTimeout(() => {
+        imgEl.remove();
+        next.style.transition = "";
+        next.style.transform  = "";
+        next.style.position   = "";
+        // next becomes the new imgEl reference for next cycle
+        imgEl = next;
+      }, 560);
+
     };
+    preload.src = imgs[idx];
 
-    window.addEventListener("touchstart", pause, { passive: true });
-    window.addEventListener("wheel",      pause, { passive: true });
-    window.addEventListener("scroll",     pause, { passive: true });
+  }, 2500);
+
+  this._sliders.set(productId, timer);
+}
+
+  _stopAllSliders() {
+    this._sliders.forEach(timer => clearInterval(timer));
+    this._sliders.clear();
   }
 
   // ── Private ───────────────────────────────────────────────
@@ -98,7 +158,7 @@ class GalleryRenderer {
           <img src="${p.image}" alt="${p.name}" loading="lazy"/>
           ${p.tag ? `<span class="ctag">${p.tag}</span>` : ""}
 
-          <!-- Zoom icon — tap to open image viewer popup -->
+          <!-- Zoom icon — tap to open full image viewer -->
           <button class="zoom-btn" aria-label="View more images">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
