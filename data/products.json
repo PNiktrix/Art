@@ -1,40 +1,36 @@
 [
   {
     "id": 1,
-    "name": "Florixa",
-    "price": "799",
-    "category": "Abstract",
-    "tag": "Bestseller",
+    "name": "Florixa Combo",
+    "price": "499",
+    "category": "Nature",
+    "tag": "Combo",
     "image": "data/Art1.jpeg",
     "images": [
       "data/Art1.jpeg",
       "data/Art1s1.jpeg",
       "data/Art1s2.jpeg",
       "data/Art1s3.jpeg",
-      "data/Art1s4.jpeg",
-      "data/Art1s5.jpeg"
+      "data/Art1s4.jpeg"
     ]
   },
   {
     "id": 2,
-    "name": "Midnight Forest",
-    "price": "899",
+    "name": "leaf Home ",
+    "price": "499",
     "category": "Nature",
     "tag": "",
     "image": "data/Art2.jpeg",
     "images": [
       "data/Art2.jpeg",
       "data/Art2s1.jpeg",
-      "data/Art2s2.jpeg",
-      "data/Art2s3.jpeg",
-      "data/Art2s4.jpeg",
-      "data/Art2s5.jpeg"
+      "data/Art2s2.jpeg"
     ]
   },
   {
     "id": 3,
-    "name": "Desert Bloom",
-    "price": "749",
+    "name": "Spring Bloom",
+    "price": "99",
     "category": "Nature",
     "tag": "New",
     "image": "data/Art3.jpeg",
@@ -49,24 +45,21 @@
   },
   {
     "id": 4,
-    "name": "Ocean Calm",
-    "price": "849",
+    "name": "View Mount Fuji",
+    "price": "299",
     "category": "Minimal",
     "tag": "",
     "image": "data/Art4.jpeg",
     "images": [
       "data/Art4.jpeg",
       "data/Art4s1.jpeg",
-      "data/Art4s2.jpeg",
-      "data/Art4s3.jpeg",
-      "data/Art4s4.jpeg",
-      "data/Art4s5.jpeg"
+      "data/Art4s2.jpeg"
     ]
   },
   {
     "id": 5,
-    "name": "Urban Lines",
-    "price": "999",
+    "name": "flower Frame",
+    "price": "199",
     "category": "Minimal",
     "tag": "Trending",
     "image": "data/Art5.jpeg",
@@ -75,8 +68,7 @@
       "data/Art5s1.jpeg",
       "data/Art5s2.jpeg",
       "data/Art5s3.jpeg",
-      "data/Art5s4.jpeg",
-      "data/Art5s5.jpeg"
+      "data/Art5s4.jpeg"
     ]
   },
   {
