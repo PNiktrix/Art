@@ -369,11 +369,11 @@ body {
 /* Tighter info text for compact cards */
 .cinfo { padding: 0.35rem 0.5rem 0.45rem; transition: background 0.25s; }
 .cname {
-  font-size: 0.65rem; font-weight: 400; color: var(--ink);
+  font-size: 0.100rem; font-weight: 400; color: var(--ink);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cprice {
-  font-size: 0.58rem; color: var(--gold);
+  font-size: 0.70rem; color: var(--gold);
   margin-top: 1px; font-weight: 300;
 }
 
