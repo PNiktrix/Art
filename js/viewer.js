@@ -84,7 +84,8 @@ class ImageViewer {
     }</div>`;
 
     this._strip = document.getElementById("zv-strip");
-    this._goTo(0, false);  // snap to first slide without animation
+    // Small delay so popup animation completes and offsetWidth is accurate
+    setTimeout(() => this._goTo(0, false), 50);// snap to first slide without animation
 
     // Bind swipe gesture on the strip
     this._bindSwipe();
@@ -117,8 +118,7 @@ class ImageViewer {
     this._idx = Math.max(0, Math.min(i, this._validImgs.length - 1));
 
     // Use pixel offset — consistent with the live drag system
-    const wrapWidth = this._imgWrap.offsetWidth || this._imgWrap.clientWidth;
-
+    const wrapWidth = this._imgWrap.getBoundingClientRect().width || this._imgWrap.offsetWidth || 300;
     if (!animate) {
       // Instant snap — no spring (used on open)
       this._strip.classList.add("dragging");
