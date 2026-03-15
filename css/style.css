@@ -324,14 +324,32 @@ body {
 
 .cimg {
   position: relative;
-  /* Golden ratio: width:height = 1:1.618 → aspect-ratio = 1/1.618 ≈ 0.618/1 */
+  /* Golden ratio: width:height = 1:1.618 */
   aspect-ratio: 1 / 1.618;
   overflow: hidden;
+  /* ── Luxury frame border ──────────────────────────────────
+     Technique: padding creates the mat/frame gap (12% of width)
+     The gold inner border sits on the wrapper, image fills inside.
+     On a 100px wide card this = ~12px frame on each side.
+  ─────────────────────────────────────────────────────────── */
+  padding: 12%;
+  background:
+    /* Outer dark mat */
+    var(--card);
+  box-shadow:
+    /* Inner gold line — the luxury frame line */
+    inset 0 0 0 1px rgba(200,168,75,0.55),
+    /* Outer gold line */
+    inset 0 0 0 2px rgba(200,168,75,0.12);
 }
+
+/* Image fills the padded inner area exactly */
 .cimg img {
   width:100%; height:100%;
   object-fit:cover; display:block;
   transition: transform 0.5s ease, filter 0.3s ease;
+  /* Slight warmth to complement the gold frame */
+  filter: saturate(1.05);
 }
 
 .ctag {
@@ -679,9 +697,14 @@ body {
 .zv-strip {
   display: flex;
   height: 100%;
-  transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
-  /* will-change for smooth GPU animation */
+  /* Natural iOS-style spring easing — feels like real photo swiping */
+  transition: transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
+  /* Disable transition during drag (set by JS) */
+}
+.zv-strip.dragging {
+  /* No transition while finger is moving — strip follows finger exactly */
+  transition: none;
 }
 
 /* Each slide fills exactly one viewport width of the strip */

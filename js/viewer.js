@@ -116,13 +116,18 @@ class ImageViewer {
     if (!this._strip) return;
     this._idx = Math.max(0, Math.min(i, this._validImgs.length - 1));
 
-    // Translate the strip — each slide is 100% of wrap width
-    if (!animate) this._strip.style.transition = "none";
-    this._strip.style.transform = `translateX(-${this._idx * 100}%)`;
+    // Use pixel offset — consistent with the live drag system
+    const wrapWidth = this._imgWrap.offsetWidth || this._imgWrap.clientWidth;
+
     if (!animate) {
-      // Force reflow then restore transition
-      this._strip.offsetHeight;
-      this._strip.style.transition = "";
+      // Instant snap — no spring (used on open)
+      this._strip.classList.add("dragging");
+      this._strip.style.transform = `translateX(-${this._idx * wrapWidth}px)`;
+      this._strip.offsetHeight;  // force reflow
+      this._strip.classList.remove("dragging");
+    } else {
+      // Spring snap back — dragging class already removed by snap()
+      this._strip.style.transform = `translateX(-${this._idx * wrapWidth}px)`;
     }
 
     // Sync dots
@@ -130,36 +135,82 @@ class ImageViewer {
       d.classList.toggle("on", j === this._idx)
     );
 
-    // Reset zoom when switching slides
     this._resetZoom();
   }
 
   // ── Private: swipe ────────────────────────────────────────
+  // Strip follows the finger in real time — feels like a real photo gallery
 
   _bindSwipe() {
-    let startX = 0, startY = 0, dragging = false;
+    let startX    = 0;
+    let startY    = 0;
+    let curX      = 0;
+    let isDragging = false;
+    let isHoriz    = false;   // confirmed horizontal swipe
+    let wrapWidth  = 0;
+
+    const snap = () => {
+      // Remove dragging class — spring transition kicks back in
+      this._strip.classList.remove("dragging");
+
+      const dx   = curX - startX;
+      const total = this._validImgs.length;
+
+      // Swipe threshold: 20% of wrap width
+      if (Math.abs(dx) > wrapWidth * 0.2) {
+        dx < 0
+          ? this._goTo(Math.min(this._idx + 1, total - 1))
+          : this._goTo(Math.max(this._idx - 1, 0));
+      } else {
+        // Snap back to current slide
+        this._goTo(this._idx);
+      }
+    };
 
     this._imgWrap.addEventListener("touchstart", e => {
-      // Only single touch — two fingers means pinch zoom
-      if (e.touches.length === 1) {
-        startX   = e.touches[0].clientX;
-        startY   = e.touches[0].clientY;
-        dragging = true;
-      }
+      if (e.touches.length !== 1) return;
+      startX     = e.touches[0].clientX;
+      startY     = e.touches[0].clientY;
+      curX       = startX;
+      isDragging = true;
+      isHoriz    = false;
+      wrapWidth  = this._imgWrap.offsetWidth;
     }, { passive: true });
 
-    this._imgWrap.addEventListener("touchend", e => {
-      if (!dragging || e.changedTouches.length !== 1) return;
-      dragging = false;
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = e.changedTouches[0].clientY - startY;
+    this._imgWrap.addEventListener("touchmove", e => {
+      if (!isDragging || e.touches.length !== 1) return;
+      curX = e.touches[0].clientX;
+      const dx = curX - startX;
+      const dy = e.touches[0].clientY - startY;
 
-      // Only treat as horizontal swipe if dx > dy (not a scroll)
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-        dx < 0
-          ? this._goTo(this._idx + 1)
-          : this._goTo(this._idx - 1);
+      // On first significant move, decide if horizontal or vertical
+      if (!isHoriz && Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+      if (!isHoriz) {
+        isHoriz = Math.abs(dx) > Math.abs(dy);
+        if (!isHoriz) { isDragging = false; return; } // vertical scroll — bail
       }
+
+      e.preventDefault();   // prevent page scroll during horizontal drag
+
+      // Strip follows finger — add live offset on top of snapped position
+      const baseOffset = this._idx * wrapWidth;
+      const liveOffset = baseOffset - dx;
+
+      // Add dragging class to kill transition so strip follows finger exactly
+      this._strip.classList.add("dragging");
+      this._strip.style.transform = `translateX(-${liveOffset}px)`;
+    }, { passive: false });
+
+    this._imgWrap.addEventListener("touchend", e => {
+      if (!isDragging) return;
+      isDragging = false;
+      snap();
+    }, { passive: true });
+
+    // Cancel drag if touch is interrupted
+    this._imgWrap.addEventListener("touchcancel", () => {
+      isDragging = false;
+      snap();
     }, { passive: true });
   }
 
