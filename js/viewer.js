@@ -77,6 +77,16 @@ class ImageViewer {
   // ── Private: image building ───────────────────────────────
 
   _buildStrip() {
+    // ── Remove ALL previous event listeners ──────────────────
+    // The cleanest way: replace the element with a fresh clone.
+    // This wipes every touchstart/touchmove/touchend ever attached.
+    // Without this, every open() stacks another set of listeners
+    // causing the progressive skip bug.
+    const fresh = this._imgWrap.cloneNode(false); // false = no children
+    this._imgWrap.parentNode.replaceChild(fresh, this._imgWrap);
+    this._imgWrap = fresh;
+
+    // Build the slide strip inside the fresh element
     this._imgWrap.innerHTML = `<div class="zv-strip" id="zv-strip">${
       this._validImgs.map((src, i) =>
         `<div class="zv-slide" data-i="${i}">
@@ -87,11 +97,10 @@ class ImageViewer {
 
     this._strip = document.getElementById("zv-strip");
 
-    // Snap to first slide instantly with no animation
+    // Snap to first slide instantly
     this._strip.style.transform = "translateX(0)";
 
-    // Bind swipe and pinch immediately — width measured on first touch
-    // so it is always accurate regardless of animation state
+    // Bind fresh listeners — only one set, no stacking
     this._bindSwipe();
     this._bindPinch();
   }
