@@ -119,6 +119,7 @@ class AppController {
   filterSize(btn)     { this.filter.setSize(btn); }
   filterSort(btn)     { this.filter.setSort(btn); }
   filterPrice()       { this.filter.setPrice(); }
+  filterSlider()      { this.filter.setSlider(); }
 
   // Viewer controls
   closeZoom()           { this.viewer.close(); }
