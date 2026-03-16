@@ -18,7 +18,7 @@ class AppController {
 
     this.slider   = new HeroSlider("hero-track", "hero-nav");
     this.gallery  = null;
-    this.category = null;
+    this.filter   = null;
     this.viewer   = null;
     this.ui       = null;
     this.wa       = null;
@@ -82,9 +82,11 @@ class AppController {
       }
     );
 
-    // Category filter — re-renders gallery with filtered list
-    this.category = new CategoryFilter("cat-bar", "sec-label", filtered => {
+    // Filter panel — replaces old category bar
+    this.filter = new FilterPanel(filtered => {
       this.gallery.render(filtered);
+      // Restore cart visuals after re-render
+      this.cart.ids().forEach(id => this.gallery.updateCard(id));
     });
 
     // Hero slider
@@ -93,9 +95,8 @@ class AppController {
       CONFIG.HERO_INTERVAL
     );
 
-    // Initial render
     this.gallery.render(products);
-    this.category.init(products);   // builds pills after gallery renders
+    this.filter.init(products);
 
     // Restore cart state from localStorage into gallery visuals
     this.cart.ids().forEach(id => this.gallery.updateCard(id));
@@ -109,6 +110,15 @@ class AppController {
     this.gallery.updateCard(id);
     this.ui.sync();
   }
+
+  // Filter panel controls
+  filterOpen()        { this.filter.open(); }
+  filterClose()       { this.filter.close(); }
+  filterReset()       { this.filter.reset(); }
+  filterCategory(btn) { this.filter.setCategory(btn); }
+  filterSize(btn)     { this.filter.setSize(btn); }
+  filterSort(btn)     { this.filter.setSort(btn); }
+  filterPrice()       { this.filter.setPrice(); }
 
   // Viewer controls
   closeZoom()           { this.viewer.close(); }

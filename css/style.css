@@ -976,3 +976,221 @@ body {
   0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 0 0 0 rgba(200,168,75,0.6); }
   50%      { box-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 0 0 5px rgba(200,168,75,0); }
 }
+
+
+/* ── 23. Filter Trigger Bar ──────────────────────────────── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 0.35rem 0.9rem;
+  font-family: var(--fb);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--ink);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: border-color 0.2s, background 0.2s;
+}
+.filter-trigger:hover { border-color: var(--gold); }
+.filter-trigger svg { stroke: var(--gold); }
+
+.filter-count {
+  font-size: 0.68rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+}
+
+
+/* ── 24. Filter Overlay + Panel ──────────────────────────── */
+#filter-overlay {
+  position: fixed; inset: 0; z-index: 150;
+  background: rgba(10,9,8,0.65);
+  backdrop-filter: blur(4px);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.35s, visibility 0.35s;
+}
+
+#filter-panel {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: min(320px, 88vw);
+  z-index: 151;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* Open state */
+#filter-panel.open {
+  transform: translateX(0);
+}
+#filter-panel.open ~ #filter-overlay,
+#filter-overlay:has(+ #filter-panel.open) {
+  opacity: 1; visibility: visible;
+}
+/* Simpler open trigger via JS class on overlay */
+#filter-overlay.open { opacity: 1; visibility: visible; }
+
+
+/* Panel header */
+.fp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.fp-title {
+  font-family: var(--fh);
+  font-size: 1.2rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+}
+.fp-header-actions {
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.fp-reset-all {
+  background: none; border: none;
+  font-family: var(--fb); font-size: 0.68rem;
+  color: var(--gold); cursor: pointer;
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.fp-close {
+  background: none; border: none;
+  color: var(--ink-dim); font-size: 1rem;
+  cursor: pointer; padding: 2px;
+}
+
+/* Panel body — scrollable */
+.fp-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0 2rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Each section */
+.fp-section {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.fp-sec-title {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.fp-sec-note {
+  font-size: 0.6rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+  text-transform: none;
+  font-weight: 300;
+}
+
+/* Pill buttons — category and size */
+.fp-pills {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.fp-pills::-webkit-scrollbar { display: none; }
+
+/* Size pills wrap to multiple lines */
+.fp-pills-wrap {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+
+.fp-cat-pill,
+.fp-size-pill,
+.fp-sort-opt {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 0.28rem 0.75rem;
+  font-family: var(--fb);
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--ink-dim);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.fp-cat-pill.active,
+.fp-size-pill.active,
+.fp-sort-opt.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #0A0908;
+  font-weight: 500;
+}
+
+/* Price range inputs */
+.fp-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fp-price-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 0.5rem 0.65rem;
+}
+.fp-price-input span {
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.fp-price-input input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--fb);
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--ink);
+  -webkit-appearance: none;
+}
+.fp-price-input input::placeholder { color: var(--ink-dim); }
+.fp-price-sep {
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  flex-shrink: 0;
+}
