@@ -295,10 +295,8 @@ body {
 .card {
   background: var(--card);
   position: relative; cursor: pointer;
-  /* Outer card border — warm gold tone at rest */
-  border: 3px solid rgba(200,168,75,0.22);
-  /* Curved card corners — matches the frame inside */
-  border-radius: 32px;
+  border: 1px solid rgba(200,168,75,0.22);
+  border-radius: 24px;
   overflow: hidden;
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
 }
@@ -307,7 +305,7 @@ body {
 /* Selected state — highly visible */
 .card.sel {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold), 0 0 20px var(--gold-glow);
+  box-shadow: 0 0 0 1px var(--gold), 0 0 20px var(--gold-glow);
 }
 .card.sel .cimg img {
   transform: scale(1.05);
@@ -369,11 +367,11 @@ body {
 /* Tighter info text for compact cards */
 .cinfo { padding: 0.35rem 0.5rem 0.45rem; transition: background 0.25s; }
 .cname {
-  font-size: 0.99rem; font-weight: 500; color: var(--ink);
+  font-size: 0.65rem; font-weight: 400; color: var(--ink);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cprice {
-  font-size: 0.80rem; color: var(--gold);
+  font-size: 0.58rem; color: var(--gold);
   margin-top: 1px; font-weight: 300;
 }
 
@@ -788,4 +786,193 @@ body {
   background: transparent;
   border: 1px solid var(--gold-dim);
   color: var(--gold);
+}
+
+
+/* ── 19. Viewer Tabs (Photos / 3D) ───────────────────────── */
+.zv-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 0.85rem;
+}
+.zv-tab {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--ink-dim);
+  font-family: var(--fb);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.zv-tab.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #0A0908;
+  font-weight: 500;
+}
+
+/* "View in 3D" tab gets a pulse animation to draw attention */
+#tab-3d:not(.active) {
+  border-color: rgba(200,168,75,0.5);
+  color: var(--gold);
+  animation: tab-pulse 2.2s ease-in-out infinite;
+}
+@keyframes tab-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(200,168,75,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(200,168,75,0.2); }
+}
+#tab-3d.active { animation: none; }
+
+
+/* ── 20. 3D Model Viewer Panel ───────────────────────────── */
+/* 1:1 square block for the model */
+.zv-model-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* perfect square */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #F2EDE6;   /* default wall — cream */
+  transition: background 0.4s ease;
+  /* Subtle inner shadow to simulate wall depth */
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.08);
+  margin-bottom: 0.65rem;
+}
+
+/* Wall background colour buttons — each gets its colour explicitly */
+.zv-wall-picker {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 7px;
+  background: rgba(10,9,8,0.55);
+  backdrop-filter: blur(8px);
+  border-radius: 50px;
+  padding: 5px 10px;
+}
+.zv-wall-btn {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+/* Set each button's background colour to match its wall option */
+.zv-wall-btn[data-wall="#F2EDE6"] { background: #F2EDE6; }
+.zv-wall-btn[data-wall="#1A1714"] { background: #1A1714; }
+.zv-wall-btn[data-wall="#C8A84B"] { background: #C8A84B; }
+.zv-wall-btn[data-wall="#2C4A3E"] { background: #2C4A3E; }
+.zv-wall-btn.active {
+  border-color: var(--gold);
+  transform: scale(1.3);
+  box-shadow: 0 0 6px rgba(200,168,75,0.6);
+}
+
+/* Colour swatch row */
+.zv-color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0 0.1rem;
+}
+.zv-color-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.zv-color-swatches {
+  display: flex;
+  gap: 8px;
+}
+.zv-swatch {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.zv-swatch.active {
+  border-color: var(--gold);
+  transform: scale(1.2);
+}
+
+
+/* ── 21. Viewer Info Row (name + price) ──────────────────── */
+.zv-info-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.zv-price {
+  font-size: 0.9rem;
+  color: var(--gold);
+  font-weight: 400;
+  white-space: nowrap;
+  font-family: var(--fb);
+}
+
+
+/* ── 22. Card Button Cluster (Zoom + 3D) ─────────────────── */
+/* ── 22. Card Buttons on Image — independently positioned ─── */
+
+/* No wrapper container — each button sits directly on .cimg */
+
+/* Zoom button — bottom right */
+.zoom-btn {
+  position: absolute;
+  bottom: 7px;
+  right: 7px;
+  z-index: 3;
+  width: 28px; height: 28px;
+  background: var(--gold);
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.55);
+  transition: transform 0.15s;
+}
+.zoom-btn svg {
+  width: 13px; height: 13px;
+  stroke: #0A0908; stroke-width: 2.2; fill: none;
+}
+.zoom-btn:active { transform: scale(0.88); }
+
+/* 3D button — sits above zoom, independently positioned */
+.card-3d-btn {
+  position: absolute;
+  bottom: 42px;   /* 28px button + 7px gap + 7px from edge = sits above zoom */
+  right: 7px;
+  z-index: 3;
+  width: 28px; height: 28px;
+  background: var(--gold);
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.55);
+  animation: btn3d-pulse 2s ease-in-out infinite;
+  transition: transform 0.15s;
+}
+.card-3d-btn svg {
+  width: 13px; height: 13px;
+  stroke: #0A0908; stroke-width: 2; fill: none;
+}
+.card-3d-btn:active { transform: scale(0.88); animation: none; }
+
+@keyframes btn3d-pulse {
+  0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 0 0 0 rgba(200,168,75,0.6); }
+  50%      { box-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 0 0 5px rgba(200,168,75,0); }
 }

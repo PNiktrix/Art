@@ -137,17 +137,20 @@ class GalleryRenderer {
     this.el.querySelectorAll(".card").forEach(card => {
       const id = +card.dataset.id;
 
-      // Use event delegation on the card level — this survives
-      // the auto-slide which replaces img elements inside .cimg
       card.addEventListener("click", e => {
-        // Check if the tap was on the zoom button or inside it
-        const zoomBtn = e.target.closest(".zoom-btn");
-        if (zoomBtn) {
+        // Zoom button — open image viewer
+        if (e.target.closest(".zoom-btn")) {
           e.stopPropagation();
           this.onZoom(id);
           return;
         }
-        // Otherwise — select/deselect
+        // 3D button — open viewer directly on 3D tab
+        if (e.target.closest(".card-3d-btn")) {
+          e.stopPropagation();
+          this.onZoom(id, "3d");   // pass tab hint to app
+          return;
+        }
+        // Card body — select/deselect
         this.onToggle(id);
         card.classList.toggle("sel", this.cart.has(id));
       });
@@ -156,20 +159,32 @@ class GalleryRenderer {
 
   _cardHTML(p) {
     const isSelected = this.cart.has(p.id);
+
+    const btn3d = p.hasModel
+      ? `<button class="card-3d-btn" aria-label="View in 3D">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+             <path d="M2 17l10 5 10-5"/>
+             <path d="M2 12l10 5 10-5"/>
+           </svg>
+         </button>`
+      : "";
+
     return `
       <div class="card${isSelected ? " sel" : ""}" data-id="${p.id}">
         <div class="cimg">
           <img src="${p.image}" alt="${p.name}" loading="lazy"/>
           ${p.tag ? `<span class="ctag">${p.tag}</span>` : ""}
 
-          <!-- Zoom icon — tap to open full image viewer -->
-          <button class="zoom-btn" aria-label="View more images">
+          ${btn3d}
+
+          <button class="zoom-btn" aria-label="Photos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
 
-          <!-- Gold checkmark — appears when selected -->
           <div class="tick">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </div>

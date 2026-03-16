@@ -69,10 +69,16 @@ class AppController {
           this.cart.has(id) ? `"${p.name}" selected` : `"${p.name}" removed`
         );
       },
-      // onZoom — zoom icon tap opens viewer
-      id => {
+      // onZoom — zoom or 3D button tap opens viewer on correct tab
+      (id, tab = "img") => {
         const p = this.repo.byId(id);
-        if (p) this.viewer.open(p);
+        if (p) {
+          this.viewer.open(p);
+          // If 3D button was tapped, switch to 3D tab after open
+          if (tab === "3d" && p.hasModel) {
+            requestAnimationFrame(() => this.viewer.switchTab("3d"));
+          }
+        }
       }
     );
 
@@ -105,8 +111,11 @@ class AppController {
   }
 
   // Viewer controls
-  closeZoom()      { this.viewer.close(); }
-  zoomAddToCart()  { this.viewer.addToCart(); }
+  closeZoom()           { this.viewer.close(); }
+  zoomAddToCart()       { this.viewer.addToCart(); }
+  viewerTab(tab)        { this.viewer.switchTab(tab); }
+  setWall(btn)          { this.viewer.setWall(btn); }
+  setModelColor(btn)    { this.viewer.setModelColor(btn); }
 
   // Contact bar controls
   openBar()     { this.tally.open(); }

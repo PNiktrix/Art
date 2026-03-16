@@ -6,27 +6,22 @@
 // ============================================================
 
 class Product {
-  constructor({ id, name, price, image, tag = "", category = "All", images = [] }) {
+  constructor({ id, name, price, image, tag = "", category = "All", images = [], model = "" }) {
     this.id       = id;
     this.name     = name;
     this.price    = price;
-    this.image    = image;        // primary thumbnail — always shown first
+    this.image    = image;
     this.tag      = tag;
     this.category = category;
+    this.model    = model;   // path to .glb file e.g. "models/art1.glb" — optional
 
     const allImgs = images.length ? images : [image];
-
-    // cardImages — used for auto-slide on the grid card
-    // Only first image + up to 2 extra (s1, s2) = max 3 total
-    // Keeps the card slide fast and not overwhelming
     this.cardImages = allImgs.slice(0, 3);
-
-    // zoomImages — all images shown inside the zoom viewer popup
-    // Can be as many as you add (s1, s2, s3, s4 ...)
     this.zoomImages = allImgs;
   }
 
   get displayPrice() { return `Rs. ${this.price}`; }
+  get hasModel()     { return !!this.model; }  // true if a GLB exists for this product
 }
 
 
