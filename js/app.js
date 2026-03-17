@@ -20,6 +20,8 @@ class AppController {
     this.gallery  = null;
     this.filter   = null;
     this.viewer   = null;
+    this.wishlist = null;
+    this.search   = null;
     this.ui       = null;
     this.wa       = null;
     this.ig       = null;
@@ -45,10 +47,16 @@ class AppController {
     }
 
     // Wire controllers
-    this.wa    = new WhatsAppController(CONFIG.WA_NUMBER, this.repo, this.cart);
-    this.ig    = new InstagramController(CONFIG.IG_HANDLE, this.repo, this.cart);
-    this.tally = new TallyController(this.repo, this.cart);
-    this.ui    = new UIManager(this.cart, this.repo);
+    this.wa       = new WhatsAppController(CONFIG.WA_NUMBER, this.repo, this.cart);
+    this.ig       = new InstagramController(CONFIG.IG_HANDLE, this.repo, this.cart);
+    this.tally    = new TallyController(this.repo, this.cart);
+    this.ui       = new UIManager(this.cart, this.repo);
+    this.wishlist = new WishlistManager(this.repo);
+    this.search   = new SearchController(this.repo, filtered => {
+      this.gallery.render(filtered);
+      this.cart.ids().forEach(id => this.gallery.updateCard(id));
+      this.wishlist.syncAfterRender();
+    });
 
     // Viewer — zoom popup
     this.viewer = new ImageViewer("zoom-overlay", this.cart, id => {
@@ -97,6 +105,8 @@ class AppController {
 
     this.gallery.render(products);
     this.filter.init(products);
+    this.search.init(products);
+    this.wishlist.syncAfterRender();
 
     // Restore cart state from localStorage into gallery visuals
     this.cart.ids().forEach(id => this.gallery.updateCard(id));
@@ -110,6 +120,26 @@ class AppController {
     this.gallery.updateCard(id);
     this.ui.sync();
   }
+
+  // Wishlist controls
+  wishlistOpen()         { this.wishlist.open(); }
+  wishlistClose()        { this.wishlist.close(); }
+  wishlistToggle(id)     { this.wishlist.toggle(id); }
+  wishlistRemove(id)     { this.wishlist.remove(id); }
+  wishlistAddToCart(id)  {
+    this.cart.add(id);
+    this.gallery.updateCard(id);
+    this.ui.sync();
+    this.wishlist.close();
+    const p = this.repo.byId(id);
+    if (p) this.ui.showToast(`"${p.name}" added to order`);
+  }
+
+  // Search controls
+  searchOpen()   { this.search.open(); }
+  searchClose()  { this.search.close(); }
+  searchInput()  { this.search.handleInput(); }
+  searchSelect(id) { this.search.selectProduct(id); }
 
   // Filter panel controls
   filterOpen()        { this.filter.open(); }

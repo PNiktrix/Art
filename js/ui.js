@@ -26,13 +26,18 @@ class UIManager {
     this._syncHint(count);
   }
 
-  // ── Header pill ─────────────────────────────────────────
+  // ── Header cart icon ────────────────────────────────────
   _syncHeader(count) {
-    const pill = document.getElementById("hdr-pill");
-    const num  = document.getElementById("hdr-n");
-    if (!pill || !num) return;
-    pill.classList.toggle("on", count > 0);
-    num.textContent = count;
+    const cartBtn = document.getElementById("hdr-pill");
+    const badge   = document.getElementById("hdr-n");
+    if (!cartBtn || !badge) return;
+
+    // Turn cart icon gold when items selected
+    cartBtn.classList.toggle("on", count > 0);
+
+    // Show/hide badge
+    badge.textContent    = count;
+    badge.style.display  = count > 0 ? "flex" : "none";
   }
 
   // ── Sticky contact bar ───────────────────────────────────

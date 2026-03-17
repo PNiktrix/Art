@@ -25,14 +25,74 @@
     <div class="sp-bar"></div>
   </div>
 
+  <!-- ── TOP BAR (LV-inspired announcement bar) ──── -->
+  <div class="top-bar">
+    <span>Free delivery on orders above Rs. 1,499</span>
+    <span class="top-bar-sep">·</span>
+    <span>Premium quality prints</span>
+    <span class="top-bar-sep">·</span>
+    <span>No advance payment</span>
+  </div>
+
   <!-- ── HEADER ─────────────────────────────────── -->
   <header class="hdr">
-    <div class="hdr-logo">Pniktrix</div>
-    <button class="hdr-pill" id="hdr-pill" onclick="App.openBar()">
-      Order Now
-      <span class="hdr-badge" id="hdr-n">0</span>
+    <!-- Left: Filter trigger -->
+    <button class="hdr-filter-btn" onclick="App.filterOpen()" aria-label="Filter">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+        <line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
     </button>
+
+    <!-- Centre: Brand name -->
+    <div class="hdr-logo">Pniktrix</div>
+
+    <!-- Right: Search, Wishlist, Cart -->
+    <div class="hdr-icons">
+      <button class="hdr-icon-btn" onclick="App.searchOpen()" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+
+      <button class="hdr-icon-btn" onclick="App.wishlistOpen()" aria-label="Wishlist" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span class="hdr-badge wl-badge-pos" id="wl-badge" style="display:none">0</span>
+      </button>
+
+      <!-- Cart icon — replaces "Order Now" pill -->
+      <button class="hdr-icon-btn hdr-cart-btn" id="hdr-pill" onclick="App.openBar()" aria-label="Cart" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="hdr-badge cart-badge-pos" id="hdr-n" style="display:none">0</span>
+      </button>
+    </div>
   </header>
+
+  <!-- ── SEARCH OVERLAY ────────────────────────── -->
+  <div id="search-overlay">
+    <div class="search-box">
+      <div class="search-input-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex-shrink:0;stroke:var(--ink-dim)">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search-input" type="text" placeholder="Search prints..."
+          oninput="App.searchInput()" autocomplete="off" autocorrect="off"/>
+        <button class="search-close-btn" onclick="App.searchClose()">&#x2715;</button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- ── WISHLIST PANEL ────────────────────────── -->
+  <div id="wishlist-overlay" onclick="if(event.target===this)App.wishlistClose()"></div>
+  <div id="wishlist-panel"></div>
 
   <!-- ── HERO SLIDER ────────────────────────────── -->
   <div class="hero">
@@ -42,19 +102,6 @@
 
   <!-- ── SELECTED PREVIEW STRIP ────────────────── -->
   <div id="strip"></div>
-
-  <!-- ── FILTER TRIGGER BAR ───────────────────── -->
-  <div class="filter-bar">
-    <button class="filter-trigger" onclick="App.filterOpen()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="8" y1="12" x2="16" y2="12"/>
-        <line x1="11" y1="18" x2="13" y2="18"/>
-      </svg>
-      Filter
-    </button>
-    <span class="filter-count" id="filter-count"></span>
-  </div>
 
   <!-- ── FILTER SLIDE-IN PANEL ─────────────────── -->
   <div id="filter-overlay" onclick="if(event.target===this)App.filterClose()"></div>
@@ -234,6 +281,8 @@
   <script src="js/slider.js"></script>
   <script src="js/gallery.js"></script>
   <script src="js/filter.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/search.js"></script>
   <script src="js/viewerSwipe.js"></script>
   <script src="js/viewer3d.js"></script>
   <script src="js/viewer.js"></script>

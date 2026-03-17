@@ -17,23 +17,13 @@ class GalleryRenderer {
     this.cart     = cart;
     this.onToggle = onToggle;
     this.onZoom   = onZoom;
-
-    // Map of productId → { imgs[], idx, timer }
-    this._sliders = new Map();
   }
 
   render(products) {
-    // Stop all running slide timers before re-render
-    this._stopAllSliders();
-
     this.el.innerHTML = products.map(p => this._cardHTML(p)).join("");
     this._bindEvents();
-
-    // Start image auto-slider for every card that has multiple card images
     products.forEach(p => {
-      if (p.cardImages && p.cardImages.length > 1) {
-        this._startSlider(p);
-      }
+      if (p.cardImages && p.cardImages.length > 1) this._startSlider(p);
     });
   }
 
@@ -47,15 +37,12 @@ class GalleryRenderer {
   _startSlider(product) {
     const card = this.el.querySelector(`.card[data-id="${product.id}"]`);
     if (!card) return;
-
     const imgEl = card.querySelector(".cimg img");
     if (!imgEl) return;
 
-    // Validate images first — only cycle through ones that load
     const validImgs = [];
     let checked = 0;
 
-    // Use cardImages — max 3 images for the card auto-slide
     product.cardImages.forEach((src, i) => {
       const tester = new Image();
       tester.onload = () => {
@@ -63,72 +50,89 @@ class GalleryRenderer {
         checked++;
         if (checked === product.cardImages.length) {
           const imgs = validImgs.filter(Boolean);
-          if (imgs.length > 1) this._cycleCard(product.id, imgEl, imgs);
+          if (imgs.length > 1) {
+            // Slide once after a short delay — then stop (manual only)
+            setTimeout(() => this._slideOnce(product.id, imgEl, imgs), 1200 + (product.id * 180));
+          }
         }
       };
       tester.onerror = () => {
         checked++;
         if (checked === product.cardImages.length) {
           const imgs = validImgs.filter(Boolean);
-          if (imgs.length > 1) this._cycleCard(product.id, imgEl, imgs);
+          if (imgs.length > 1) {
+            setTimeout(() => this._slideOnce(product.id, imgEl, imgs), 1200 + (product.id * 180));
+          }
         }
       };
       tester.src = src;
     });
   }
 
-  _cycleCard(productId, imgEl, imgs) {
-    let idx  = 0;
-    // Keep a live reference — gets updated as new img elements are created
-    let curr = imgEl;
-    const wrap = curr.parentElement;
+  // Slide to the next image exactly once — then bind manual swipe
+  _slideOnce(productId, imgEl, imgs) {
+    let curr    = imgEl;
+    let idx     = 0;
+    const wrap  = curr.parentElement;
+    const total = imgs.length;
 
-    const timer = setInterval(() => {
-      idx = (idx + 1) % imgs.length;
-
-      // Preload next image before animating — prevents flash
-      const preload = new Image();
-      preload.onload = () => {
-        // Create the incoming image starting off-screen right
-        const next = document.createElement("img");
-        next.src = imgs[idx];
-        next.style.cssText = [
-          "position:absolute",
-          "top:0", "left:0",
-          "width:100%", "height:100%",
-          "object-fit:cover",
-          "border-radius:inherit",
-          "transform:translateX(100%)",
-          "transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94)"
-        ].join(";");
-
-        wrap.appendChild(next);
-
-        // Force reflow so transition fires
-        next.getBoundingClientRect();
-
-        // Slide next in from right, current out to left simultaneously
-        next.style.transform = "translateX(0)";
-        curr.style.cssText  += ";transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);transform:translateX(-100%)";
-
-        setTimeout(() => {
-          curr.remove();
-          // Clean up inline styles from next so it behaves as a normal img
-          next.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit";
-          // Update live reference for next cycle
-          curr = next;
-        }, 580);
-      };
-      preload.src = imgs[idx];
-
-    }, 2800); // 2.8s between slides — enough time to see each image clearly
-
-    this._sliders.set(productId, timer);
+    // One-time intro slide
+    this._doSlide(wrap, curr, imgs[1], next => {
+      curr = next;
+      idx  = 1;
+      // After the intro slide, allow manual left/right swipe on the card
+      this._bindCardSwipe(wrap, imgs, () => idx, (i) => {
+        idx = i;
+        this._doSlide(wrap, curr, imgs[i], n => { curr = n; });
+      });
+    });
   }
 
-  _stopAllSliders() {
-    this._sliders.forEach(timer => clearInterval(timer));
-    this._sliders.clear();
+  // Animate one slide transition — calls back with the new current element
+  _doSlide(wrap, curr, nextSrc, onDone) {
+    const preload   = new Image();
+    preload.onload  = () => {
+      const next = document.createElement("img");
+      next.src   = nextSrc;
+      next.style.cssText = [
+        "position:absolute","top:0","left:0",
+        "width:100%","height:100%",
+        "object-fit:cover","border-radius:inherit",
+        "transform:translateX(100%)",
+        "transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)"
+      ].join(";");
+      wrap.appendChild(next);
+      next.getBoundingClientRect();
+      next.style.transform = "translateX(0)";
+      curr.style.cssText  += ";transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);transform:translateX(-100%)";
+      setTimeout(() => {
+        curr.remove();
+        next.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit";
+        if (onDone) onDone(next);
+      }, 520);
+    };
+    preload.src = nextSrc;
+  }
+
+  // Bind swipe left/right on a card image area
+  _bindCardSwipe(wrap, imgs, getIdx, goTo) {
+    let sx = 0;
+    wrap.addEventListener("touchstart", e => {
+      sx = e.touches[0].clientX;
+    }, { passive: true });
+    wrap.addEventListener("touchend", e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) < 30) return;
+      const total = imgs.length;
+      const cur   = getIdx();
+      if (dx < 0) {
+        // Swipe left — next image
+        goTo((cur + 1) % total);
+      } else {
+        // Swipe right — previous image
+        goTo((cur - 1 + total) % total);
+      }
+    }, { passive: true });
   }
 
   // ── Private ───────────────────────────────────────────────
@@ -175,6 +179,14 @@ class GalleryRenderer {
         <div class="cimg">
           <img src="${p.image}" alt="${p.name}" loading="lazy"/>
           ${p.tag ? `<span class="ctag">${p.tag}</span>` : ""}
+
+          <!-- Heart / wishlist button — top left -->
+          <button class="heart-btn" data-id="${p.id}" aria-label="Add to wishlist"
+            onclick="event.stopPropagation();App.wishlistToggle(${p.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="12" height="12">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
 
           ${btn3d}
 
