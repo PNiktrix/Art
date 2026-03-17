@@ -335,13 +335,13 @@ body {
 /* ── 8. Product Grid & Cards ─────────────────────────────── */
 .grid {
   display: grid;
-  /* 3 columns on mobile — more products visible at once */
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  padding: 0 2px 2px;
+  /* 2 columns on mobile — LV style, larger cards with breathing room */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px;
 }
-@media (min-width: 540px) { .grid { grid-template-columns: repeat(4,1fr); } }
-@media (min-width: 820px) { .grid { grid-template-columns: repeat(5,1fr); } }
+@media (min-width: 540px) { .grid { grid-template-columns: repeat(3,1fr); gap: 16px; padding: 16px; } }
+@media (min-width: 820px) { .grid { grid-template-columns: repeat(4,1fr); gap: 20px; padding: 20px; } }
 
 .card {
   background: var(--card);
@@ -418,12 +418,12 @@ body {
 /* Tighter info text for compact cards */
 .cinfo { padding: 0.35rem 0.5rem 0.45rem; transition: background 0.25s; }
 .cname {
-  font-size: 0.65rem; font-weight: 400; color: var(--ink);
+  font-size: 1rem; font-weight: 400; color: var(--ink);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cprice {
-  font-size: 0.58rem; color: var(--gold);
-  margin-top: 1px; font-weight: 300;
+  font-size: 0.85rem; color: var(--gold);
+  margin-top: 2px; font-weight: 300;
 }
 
 
@@ -1238,6 +1238,7 @@ body {
   font-weight: 300;
   color: var(--ink);
   -webkit-appearance: none;
+appearance: none;
 }
 .fp-price-input input::placeholder { color: var(--ink-dim); }
 .fp-price-sep {
